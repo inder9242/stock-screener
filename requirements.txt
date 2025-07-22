@@ -1,0 +1,8 @@
+streamlit
+pandas
+openpyxl
+time
+yfinance
+nsepython
+
+

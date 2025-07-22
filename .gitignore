@@ -1,0 +1,23 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Jupyter/Notebook checkpoints
+.ipynb_checkpoints/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Excel or CSV (if generated during testing)
+*.xls
+*.xlsx
+*.csv
+
+# Streamlit cache
+.streamlit/
+
+# VS Code and other IDE config files
+.vscode/
+.idea/
