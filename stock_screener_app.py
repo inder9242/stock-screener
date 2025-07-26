@@ -25,19 +25,27 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# ---------- Company Info Lookup ----------
+# ---------- Company Info Lookup with Auto-Selection ----------
 with st.expander("🔍 Company Info Lookup"):
     company = st.text_input("Enter company symbol (e.g. RELIANCE):").strip().upper()
+    auto_series = auto_macro = auto_sector = auto_industry = auto_basic = None
+    
     if company:
         result = df[df["SYMBOL"].str.upper() == company]
         if not result.empty:
             row = result.iloc[0]
+            auto_series = row.get('SERIES', None)
+            auto_macro = row.get('MACRO', None)
+            auto_sector = row.get('SECTOR', None)
+            auto_industry = row.get('INDUSTRY', None)
+            auto_basic = row.get('BASICINDUSTRY', None)
+
             st.markdown(f"""
-            - **Series:** {row.get('SERIES', 'N/A')}
-            - **Macro-Economic Sector:** {row.get('MACRO', 'N/A')}
-            - **Sector:** {row.get('SECTOR', 'N/A')}
-            - **Industry:** {row.get('INDUSTRY', 'N/A')}
-            - **Basic Industry:** {row.get('BASICINDUSTRY', 'N/A')}
+            - **Series:** {auto_series}
+            - **Macro-Economic Sector:** {auto_macro}
+            - **Sector:** {auto_sector}
+            - **Industry:** {auto_industry}
+            - **Basic Industry:** {auto_basic}
             """)
         else:
             st.warning("Company not found.")
@@ -57,19 +65,41 @@ pretty_names = [f"{code} – {series_map.get(code, 'Unknown')}" for code in avai
 reverse_map = {f"{k} – {v}": k for k, v in series_map.items()}
 
 st.subheader("🎯 Filter by NSE Series")
-series_pretty_selected = st.multiselect("Select NSE Series", options=pretty_names)
+series_pretty_selected = st.multiselect(
+    "Select NSE Series",
+    options=pretty_names,
+    default=[f"{auto_series} – {series_map.get(auto_series)}"] if auto_series in series_map else []
+)
 series_selected = [reverse_map[name] for name in series_pretty_selected if name in reverse_map]
 
-# ---------- Industry Filters ----------
+# ---------- Industry Filters (Auto-select if company matched) ----------
 st.subheader("🏢 Industry Filters (NSE classification)")
 
 col1, col2 = st.columns(2)
-macro_selected = col1.multiselect("Macro-Economic Sector", options=sorted(df["MACRO"].dropna().unique()))
-sector_selected = col2.multiselect("Sector", options=sorted(df["SECTOR"].dropna().unique()))
+macro_selected = col1.multiselect(
+    "Macro-Economic Sector",
+    options=sorted(df["MACRO"].dropna().unique()),
+    default=[auto_macro] if auto_macro else []
+)
+
+sector_selected = col2.multiselect(
+    "Sector",
+    options=sorted(df["SECTOR"].dropna().unique()),
+    default=[auto_sector] if auto_sector else []
+)
 
 col3, col4 = st.columns(2)
-industry_selected = col3.multiselect("Industry", options=sorted(df["INDUSTRY"].dropna().unique()))
-basic_selected = col4.multiselect("Basic Industry", options=sorted(df["BASICINDUSTRY"].dropna().unique()))
+industry_selected = col3.multiselect(
+    "Industry",
+    options=sorted(df["INDUSTRY"].dropna().unique()),
+    default=[auto_industry] if auto_industry else []
+)
+
+basic_selected = col4.multiselect(
+    "Basic Industry",
+    options=sorted(df["BASICINDUSTRY"].dropna().unique()),
+    default=[auto_basic] if auto_basic else []
+)
 
 # ---------- Apply Filters ----------
 filtered_df = df.copy()
@@ -158,4 +188,5 @@ st.markdown("""
 - "Use cases include relative valuation (trading comps), peer benchmarking, sectoral screening, investment research, and idea generation for portfolio construction."  
 - 📩 For queries: indrajeetsingh9242@gmail.com
 """)
+
 
