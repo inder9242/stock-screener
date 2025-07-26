@@ -4,6 +4,7 @@ This is my first open-source GitHub project, created as part of my learning jour
 
 This app is built using Python and Streamlit, and allows users to screen over 2500+ NSE-listed companies based on financial ratios and NSE’s 4-level classification system.
 
+streamlit - https://stock-screener-nse.streamlit.app/
 ---
 
 # Features
